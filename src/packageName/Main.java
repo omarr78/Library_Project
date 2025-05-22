@@ -114,8 +114,15 @@ public class Main {
                     "join u_have_b h on u.u_id = h.u_id " +
                     "join books as b on h.b_id = b.b_id " +
                     "where u.u_id = ?");
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            ps.setInt(1, id);
+            PreparedStatement ps;
+            if(id == MANAGER_ID)
+            {
+                 ps = DealingWithDatabase.getConnection().prepareStatement("select * from books");
+            }
+            else{
+                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps.setInt(1, id);
+            }
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -232,7 +239,7 @@ public class Main {
             }
 
             ps.executeUpdate();
-            System.out.println("Book removed from My Books");
+            System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
         }catch (SQLException e) {
             System.out.println("An error occurred while UnLinkUB.");
             e.printStackTrace();

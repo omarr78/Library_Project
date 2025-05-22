@@ -28,10 +28,17 @@ public class Searching {
     }
     public static Book searchById(int u_id,int b_id) {
         try{
-            String query = SUBQUERY + "where u.u_id = ? and b.b_id = ?";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            ps.setInt(1, u_id);
-            ps.setInt(2, b_id);
+            PreparedStatement ps;
+            if(u_id == Main.MANAGER_ID){
+                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where b_id = ?");
+                ps.setInt(1, b_id);
+            }
+            else{
+                String query = SUBQUERY + "where u.u_id = ? and b.b_id = ?";
+                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps.setInt(1, u_id);
+                ps.setInt(2, b_id);
+            }
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
                 int id = rs.getInt("b_id");
@@ -70,10 +77,18 @@ public class Searching {
     }
     public static ArrayList<Book> searchByTitle(int u_id,String title) {
         try{
-            String query = SUBQUERY + "where u.u_id = ? and lower(b.b_title) LIKE ?";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            ps.setInt(1, u_id);
-            ps.setString(2, "%" + title.toLowerCase() + "%");
+            PreparedStatement ps;
+            if(u_id == Main.MANAGER_ID){
+                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where lower(b_title) LIKE ?");
+                ps.setString(1, "%" + title.toLowerCase() + "%");
+            }
+            else{
+                String query = SUBQUERY + "where u.u_id = ? and lower(b.b_title) LIKE ?";
+                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps.setInt(1, u_id);
+                ps.setString(2, "%" + title.toLowerCase() + "%");
+            }
+
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
         } catch (SQLException e) {
@@ -97,12 +112,20 @@ public class Searching {
         }
     }
     public static ArrayList<Book> searchByAuthor(int u_id,String author) {
-        ArrayList<Book> ret = new ArrayList<>();
         try{
-            String query = SUBQUERY + "where u.u_id = ? and lower(b.b_author) LIKE ?";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            ps.setInt(1, u_id);
-            ps.setString(2, "%" + author.toLowerCase() + "%");
+            PreparedStatement ps;
+            if(u_id == Main.MANAGER_ID){
+                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where lower(b_author) LIKE ?");
+                ps.setString(1, "%" + author.toLowerCase() + "%");
+
+            }
+            else{
+                String query = SUBQUERY + "where u.u_id = ? and lower(b.b_author) LIKE ?";
+                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps.setInt(1, u_id);
+                ps.setString(2, "%" + author.toLowerCase() + "%");
+            }
+
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
         } catch (SQLException e) {
@@ -125,12 +148,19 @@ public class Searching {
         }
     }
     public static ArrayList<Book> searchByTopic(int u_id,String topic) {
-        ArrayList<Book> ret = new ArrayList<>();
         try{
-            String query = SUBQUERY + "where u.u_id = ? and lower(b.b_topic) LIKE ?";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            ps.setInt(1, u_id);
-            ps.setString(2, "%" + topic.toLowerCase() + "%");
+            PreparedStatement ps;
+            if(u_id == Main.MANAGER_ID){
+                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where lower(b_topic) LIKE ?");
+                ps.setString(1, "%" + topic.toLowerCase() + "%");
+            }
+            else{
+                String query = SUBQUERY + "where u.u_id = ? and lower(b.b_topic) LIKE ?";
+                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps.setInt(1, u_id);
+                ps.setString(2, "%" + topic.toLowerCase() + "%");
+            }
+
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
         } catch (SQLException e) {
@@ -153,12 +183,19 @@ public class Searching {
         }
     }
     public static ArrayList<Book> searchByYear(int u_id,int year) {
-        ArrayList<Book> ret = new ArrayList<>();
         try{
-            String query = SUBQUERY + "where u.u_id = ? and b.b_year = ?";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            ps.setInt(1, u_id);
-            ps.setInt(2, year);
+            PreparedStatement ps;
+            if(u_id == Main.MANAGER_ID){
+                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where b_year = ?");
+                ps.setInt(1, year);
+            }
+            else{
+                String query = SUBQUERY + "where u.u_id = ? and b.b_year = ?";
+                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps.setInt(1, u_id);
+                ps.setInt(2, year);
+            }
+
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
         } catch (SQLException e) {

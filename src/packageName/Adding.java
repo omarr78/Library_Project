@@ -70,6 +70,7 @@ public class Adding {
     public static void createBook(){
         Book book = new Book(-1,getTitle(),getAuthor(),getTopic(),getYear());
         try{
+            // first check if book is already exist
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(
                     "SELECT * FROM books WHERE b_title = ?");
             ps.setString(1,book.getTitle());
@@ -88,15 +89,6 @@ public class Adding {
                 prs.setInt(4,book.getYear());
                 prs.executeUpdate();
                 System.out.println("Book added to All Books");
-
-
-                // Retrieve the generated book ID
-                ResultSet gk = prs.getGeneratedKeys();
-                int new_id = -1;
-                if(gk.next()){
-                    new_id = gk.getInt(1);
-                }
-                Main.linkUB(Main.MANAGER_ID,new_id);
             }
         } catch (SQLException e) {
             System.out.println("An error occurred while creating the book.");
