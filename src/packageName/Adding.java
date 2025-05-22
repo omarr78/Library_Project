@@ -92,7 +92,8 @@ public class Adding {
             }
         } catch (SQLException e) {
             System.out.println("An error occurred while creating the book.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            System.exit(0);
         }
 
     }
