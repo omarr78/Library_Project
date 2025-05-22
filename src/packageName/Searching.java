@@ -8,6 +8,11 @@ import java.util.Scanner;
 
 
 public class Searching {
+    private static final String SUBQUERY =
+            "select b.b_id,b_title,b_author,b_topic,b_year " +
+                    "from users as u " +
+                    "join u_have_b h on u.u_id = h.u_id " +
+                    "join books as b on h.b_id = b.b_id ";
     private static ArrayList<Book> resultHandling(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
 
@@ -23,11 +28,7 @@ public class Searching {
     }
     public static Book searchById(int u_id,int b_id) {
         try{
-            String query = ("select b.b_id,b_title,b_author,b_topic,b_year " +
-                    "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
-                    "join books as b on h.b_id = b.b_id " +
-                    "where u.u_id = ? and b.b_id = ?");
+            String query = SUBQUERY + "where u.u_id = ? and b.b_id = ?";
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
             ps.setInt(1, u_id);
             ps.setInt(2, b_id);
@@ -69,11 +70,7 @@ public class Searching {
     }
     public static ArrayList<Book> searchByTitle(int u_id,String title) {
         try{
-            String query = ("select b.b_id,b_title,b_author,b_topic,b_year " +
-                    "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
-                    "join books as b on h.b_id = b.b_id " +
-                    "where u.u_id = ? and lower(b.b_title) LIKE ?");
+            String query = SUBQUERY + "where u.u_id = ? and lower(b.b_title) LIKE ?";
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
             ps.setInt(1, u_id);
             ps.setString(2, "%" + title.toLowerCase() + "%");
@@ -102,11 +99,7 @@ public class Searching {
     public static ArrayList<Book> searchByAuthor(int u_id,String author) {
         ArrayList<Book> ret = new ArrayList<>();
         try{
-            String query = ("select b.b_id,b_title,b_author,b_topic,b_year " +
-                    "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
-                    "join books as b on h.b_id = b.b_id " +
-                    "where u.u_id = ? and lower(b.b_author) LIKE ?");
+            String query = SUBQUERY + "where u.u_id = ? and lower(b.b_author) LIKE ?";
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
             ps.setInt(1, u_id);
             ps.setString(2, "%" + author.toLowerCase() + "%");
@@ -134,11 +127,7 @@ public class Searching {
     public static ArrayList<Book> searchByTopic(int u_id,String topic) {
         ArrayList<Book> ret = new ArrayList<>();
         try{
-            String query = ("select b.b_id,b_title,b_author,b_topic,b_year " +
-                    "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
-                    "join books as b on h.b_id = b.b_id " +
-                    "where u.u_id = ? and lower(b.b_topic) LIKE ?");
+            String query = SUBQUERY + "where u.u_id = ? and lower(b.b_topic) LIKE ?";
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
             ps.setInt(1, u_id);
             ps.setString(2, "%" + topic.toLowerCase() + "%");
@@ -166,11 +155,7 @@ public class Searching {
     public static ArrayList<Book> searchByYear(int u_id,int year) {
         ArrayList<Book> ret = new ArrayList<>();
         try{
-            String query = ("select b.b_id,b_title,b_author,b_topic,b_year " +
-                    "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
-                    "join books as b on h.b_id = b.b_id " +
-                    "where u.u_id = ? and b.b_year = ?");
+            String query = SUBQUERY + "where u.u_id = ? and b.b_year = ?";
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
             ps.setInt(1, u_id);
             ps.setInt(2, year);
