@@ -22,7 +22,7 @@ public class Main {
     Scanner sc = new Scanner(System.in);
 
 
-    public String start() {
+    public String start() { //JFT
         String input;
         sc = new Scanner(System.in);
         while (true) {
