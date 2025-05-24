@@ -62,8 +62,7 @@ public class Main {
                     }
                 }catch (SQLException e) {
                     System.out.println("An error occurred while signing up.");
-                    System.out.println(e.getMessage());
-                    System.exit(0);
+                    e.printStackTrace();
                 }
             } else {
                 System.out.println("invalid Email or Password");
@@ -98,8 +97,7 @@ public class Main {
                     }
                 }catch (SQLException e) {
                     System.out.println("An error occurred while login.");
-                    System.out.println(e.getMessage());
-                    System.exit(0);
+                    e.printStackTrace();
                 }
             }
             else{
@@ -138,8 +136,7 @@ public class Main {
             }
         }catch(SQLException e){
                 System.out.println("An error occurred while showing Books.");
-                System.out.println(e.getMessage());
-                System.exit(0);
+                e.printStackTrace();
         }
         if(!ch){
             System.out.println("Books Not Found");
@@ -206,8 +203,7 @@ public class Main {
             System.out.println("Book added to My Books");
         }catch (SQLException e) {
             System.out.println("An error occurred while LinkUB.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
     }
 
@@ -246,8 +242,7 @@ public class Main {
             System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
         }catch (SQLException e) {
             System.out.println("An error occurred while UnLinkUB.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
     }
 
@@ -292,7 +287,7 @@ public class Main {
                 main.signUp();
                 res = main.login();
             } else {
-                DealingWithDatabase.closeConnection();
+                sc.close();
                 return;
             }
             if (res != null) break;

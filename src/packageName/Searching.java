@@ -53,8 +53,7 @@ public class Searching {
             }
         } catch (SQLException e) {
             System.out.println("An error occurred while searching for a Book id.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
         return null;
     }
@@ -94,8 +93,7 @@ public class Searching {
             return resultHandling(rs);
         } catch (SQLException e) {
             System.out.println("An error occurred while searching for a Book title.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -132,8 +130,7 @@ public class Searching {
             return resultHandling(rs);
         } catch (SQLException e) {
             System.out.println("An error occurred while searching for a Book author.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -168,8 +165,7 @@ public class Searching {
             return resultHandling(rs);
         } catch (SQLException e) {
             System.out.println("An error occurred while searching for a Book topic.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -204,8 +200,7 @@ public class Searching {
             return resultHandling(rs);
         } catch (SQLException e) {
             System.out.println("An error occurred while searching for a Book year.");
-            System.out.println(e.getMessage());
-            System.exit(0);
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
