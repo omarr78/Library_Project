@@ -32,9 +32,9 @@ public class Deleting {
                 ps.setInt(1,b_id);
                 ps.executeUpdate();
                 System.out.println("Book removed from All Books");
-            } catch (SQLException e) {
+            } catch (SQLException | NullPointerException e) {
                 System.out.println("An error occurred while removing the book.");
-                e.printStackTrace();
+                System.out.println(e.getMessage());
             }
 
         }

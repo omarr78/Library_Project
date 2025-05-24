@@ -20,18 +20,24 @@ public class DealingWithDatabase {
         }catch(SQLException e) {
             System.out.println("Start Connection failed");
             System.out.println(e.getMessage());
-//            e.printStackTrace();
         }
     }
-    public static Connection getConnection(){
-        return con;
+    public static Connection getConnection() throws SQLException {
+        if(con != null && con.isValid(2)) {
+            return con;
+        }
+        else{
+            startConnection();
+            return con;
+        }
     }
     public static void closeConnection() {
         try{
-            con.close();
+            if(con != null && !con.isClosed()){
+                con.close();
+            }
         }catch(SQLException e) {
             System.out.println("Closing Connection failed");
-            e.printStackTrace();
         }
     }
 

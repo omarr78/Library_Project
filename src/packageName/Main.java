@@ -60,9 +60,9 @@ public class Main {
                         System.out.println("Account successfully created");
                         break;
                     }
-                }catch (SQLException e) {
+                }catch (SQLException | NullPointerException e) {
                     System.out.println("An error occurred while signing up.");
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                 }
             } else {
                 System.out.println("invalid Email or Password");
@@ -95,9 +95,9 @@ public class Main {
                         i++;
                         if (i == 2) break;
                     }
-                }catch (SQLException e) {
+                }catch (SQLException | NullPointerException e) {
                     System.out.println("An error occurred while login.");
-                    e.printStackTrace();
+                    System.out.println(e.getMessage());
                 }
             }
             else{
@@ -134,9 +134,9 @@ public class Main {
                 int year = rs.getInt("b_year");
                 printBook(new Book(id,title,author,topic,year));
             }
-        }catch(SQLException e){
+        }catch(SQLException | NullPointerException e){
                 System.out.println("An error occurred while showing Books.");
-                e.printStackTrace();
+                System.out.println(e.getMessage());
         }
         if(!ch){
             System.out.println("Books Not Found");
@@ -201,9 +201,9 @@ public class Main {
             ps.setInt(2,b_id);
             ps.executeUpdate();
             System.out.println("Book added to My Books");
-        }catch (SQLException e) {
+        }catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while LinkUB.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -240,9 +240,9 @@ public class Main {
 
             ps.executeUpdate();
             System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
-        }catch (SQLException e) {
+        }catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while UnLinkUB.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -287,7 +287,7 @@ public class Main {
                 main.signUp();
                 res = main.login();
             } else {
-                sc.close();
+                DealingWithDatabase.closeConnection();
                 return;
             }
             if (res != null) break;

@@ -51,9 +51,9 @@ public class Searching {
             else{
                 return null;
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while searching for a Book id.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return null;
     }
@@ -91,9 +91,9 @@ public class Searching {
 
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while searching for a Book title.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return new ArrayList<>();
     }
@@ -128,9 +128,9 @@ public class Searching {
 
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while searching for a Book author.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return new ArrayList<>();
     }
@@ -163,9 +163,9 @@ public class Searching {
 
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while searching for a Book topic.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return new ArrayList<>();
     }
@@ -198,9 +198,9 @@ public class Searching {
 
             ResultSet rs = ps.executeQuery();
             return resultHandling(rs);
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while searching for a Book year.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
         return new ArrayList<>();
     }

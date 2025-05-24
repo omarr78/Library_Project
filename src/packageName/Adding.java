@@ -90,9 +90,9 @@ public class Adding {
                 prs.executeUpdate();
                 System.out.println("Book added to All Books");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while creating the book.");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
     }
