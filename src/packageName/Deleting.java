@@ -34,8 +34,7 @@ public class Deleting {
                 System.out.println("Book removed from All Books");
             } catch (SQLException e) {
                 System.out.println("An error occurred while removing the book.");
-                System.out.println(e.getMessage());
-                System.exit(0);
+                e.printStackTrace();
             }
 
         }
