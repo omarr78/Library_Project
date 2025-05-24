@@ -36,7 +36,8 @@ public class PrintMessage {
         System.out.println("2- Search Book");
         System.out.println("3- Add New Book");
         System.out.println("4- Delete Book");
-        System.out.println("5- (-1) to Exit");
+        System.out.println("5- show All users");
+        System.out.println("(-1) to Exit");
     }
     static void showMainMessageUser(String email){
         System.out.println("---------------------------------------------------");
