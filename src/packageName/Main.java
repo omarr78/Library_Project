@@ -359,7 +359,7 @@ public class Main {
 
             ps.executeUpdate();
             if(op.equals("update")){
-                System.out.println("you already have this book but expired");
+                System.out.println("You previously borrowed this book, but the borrowing period has expired.");
             }
             else{
                 System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
@@ -389,7 +389,7 @@ public class Main {
                     + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
         }
         else{
-            System.out.println("[Borrowed until " + date + " ] " + "ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
+            System.out.println("[Borrowed until " + date + "] " + "ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
                     + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
         }
 
