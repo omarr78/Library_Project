@@ -26,6 +26,21 @@ public class Searching {
         }
         return books;
     }
+    public static boolean isBookExpired(int u_id,int b_id) {
+        try {
+            String query = "select * from u_have_b where (u_id = ? and b_id = ?) and (end_date is not NULL) and (end_date < getdate())";
+            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            ps.setInt(1, u_id);
+            ps.setInt(2, b_id);
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next(); // if rs have a row -> the book is expired so return true
+        } catch (SQLException | NullPointerException e) {
+            System.out.println("An error occurred while checking for expired book.");
+            System.out.println(e.getMessage());
+        }
+        return false; // if(we got an error) or there is no expired date we don't need to add book
+    }
     public static Book searchById(int u_id,int b_id) {
         try{
             PreparedStatement ps;

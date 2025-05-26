@@ -33,10 +33,11 @@ public class PrintMessage {
         System.out.println("---------------------------------------------------");
         System.out.println("-- "+ email +" --");
         System.out.println("1- Show All Books");
-        System.out.println("2- Search Book");
-        System.out.println("3- Add New Book");
-        System.out.println("4- Delete Book");
-        System.out.println("5- (-1) to Exit");
+        System.out.println("2- Show Users Borrowing and Purchase Records");
+        System.out.println("3- Search Book");
+        System.out.println("4- Add New Book");
+        System.out.println("5- Delete Book");
+        System.out.println("(-1) to Exit");
     }
     static void showMainMessageUser(String email){
         System.out.println("---------------------------------------------------");
@@ -55,5 +56,15 @@ public class PrintMessage {
         System.out.println("3- Search By Author");
         System.out.println("4- Search By topic");
         System.out.println("5- Search By Publish Year");
+    }
+    static void showBuyBorrowMessage(){
+        System.out.println("1- Buy Book");
+        System.out.println("2- Borrow Book");
+    }
+    static void showBorrowMessage(){
+        System.out.println("1- Borrow Book for 3 days");
+        System.out.println("2- Borrow Book for a week");
+        System.out.println("3- Borrow Book for two weeks");
+        System.out.println("4- Borrow Book for three weeks");
     }
 }

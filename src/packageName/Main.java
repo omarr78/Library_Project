@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 class Result {
     public int id;
@@ -106,33 +110,39 @@ public class Main {
         }
         return null;
     }
-    public void showBooks(int id){
+    public void showBooks(int passedId){
         boolean ch = false;
         try {
-            String query = ("select b.b_id,b_title,b_author,b_topic,b_year " +
-                    "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
-                    "join books as b on h.b_id = b.b_id " +
-                    "where u.u_id = ?");
             PreparedStatement ps;
-            if(id == MANAGER_ID)
+            if(passedId == MANAGER_ID)
             {
                  ps = DealingWithDatabase.getConnection().prepareStatement("select * from books");
             }
             else{
+                String query = ("select b.b_id,b_title,b_author,b_topic,b_year,end_date " +
+                        "from users as u " +
+                        "join u_have_b h on u.u_id = h.u_id " +
+                        "join books as b on h.b_id = b.b_id " +
+                        "where u.u_id = ? and (end_date is NULL or end_date > getdate())");
                 ps = DealingWithDatabase.getConnection().prepareStatement(query);
-                ps.setInt(1, id);
+                ps.setInt(1, passedId);
             }
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
                 ch = true;
-                id = rs.getInt("b_id");
+                int id = rs.getInt("b_id");
                 String title = rs.getString("b_title");
                 String author = rs.getString("b_author");
                 String topic = rs.getString("b_topic");
                 int year = rs.getInt("b_year");
-                printBook(new Book(id,title,author,topic,year));
+                if(passedId == MANAGER_ID){
+                    printBook(new Book(id,title,author,topic,year));
+                }
+                else{
+                    java.sql.Date end_date = rs.getDate("end_date");
+                    printBook(new Book(id,title,author,topic,year),end_date);
+                }
             }
         }catch(SQLException | NullPointerException e){
                 System.out.println("An error occurred while showing Books.");
@@ -140,6 +150,43 @@ public class Main {
         }
         if(!ch){
             System.out.println("Books Not Found");
+        }
+    }
+    public void showUsersRecords(){
+        boolean ch = false;
+        try {
+            String query = "select u_email,b_title,start_date,end_date " +
+                    "from users as u " +
+                    "join u_have_b h on u.u_id = h.u_id " +
+                    "join books as b on h.b_id = b.b_id " +
+                    "order by start_date";
+            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ch = true;
+                java.sql.Date end_date = rs.getDate("end_date");
+                LocalDateTime start_date = rs.getTimestamp("start_date").toLocalDateTime();
+                String title = rs.getString("b_title");
+                String email = rs.getString("u_email");
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a");
+                String formattedDate = start_date.format(formatter);
+
+                if(end_date == null){
+                    System.out.println("(" + formattedDate + ")" + " " + email + " (Bought) \"" +  title + "\"");
+                }
+                else{
+                    System.out.println("(" + formattedDate + ")" + " " + email + " (Borrow) \"" + title + "\"" + " to " + "(" + end_date + ")");
+                }
+            }
+        }catch(SQLException | NullPointerException e){
+            System.out.println("An error occurred while showing users records.");
+            System.out.println(e.getMessage());
+        }
+        if(!ch){
+            System.out.println("There is No Records Found");
         }
     }
     public void searchBooks(int u_id){
@@ -168,7 +215,6 @@ public class Main {
             break;
         }
     }
-
     public void addToMyBooks(int u_id){
         String id;
         while (true) {
@@ -181,10 +227,26 @@ public class Main {
         }
         int b_id = Integer.parseInt(id);
         Book book = Searching.searchById(MANAGER_ID, b_id);
-        if (book != null) {
+        if (book != null) { // check if the id of book found in all book
             book = Searching.searchById(u_id, b_id);
-            if(book == null){
-                linkUB(u_id,b_id);
+            if(book == null || Searching.isBookExpired(u_id,b_id)){ // check if book is not exist in myBook
+                deleteFromMyBooks(u_id, b_id);
+                String choice;
+                while(true){
+                    PrintMessage.showBuyBorrowMessage();
+                    choice = sc.nextLine();
+                    if(choice.equals("1")) {
+                        buyBook(u_id,b_id);
+                        break;
+                    }
+                    else if(choice.equals("2")){
+                        borrowBook(u_id,b_id);
+                        break;
+                    }
+                    else{
+                        System.out.println("Invalid input");
+                    }
+                }
             }
             else{
                 System.out.println("Book already exists in My Books");
@@ -193,16 +255,69 @@ public class Main {
             System.out.println("the ID of Book not found to Add to My Books");
         }
     }
-    public static void linkUB(int u_id, int b_id) {
+    public static void buyBook(int u_id, int b_id) {
         try{
-            String query = ("insert into u_have_b(u_id,b_id) values (?,?)");
+            LocalDateTime start = LocalDateTime.now();
+            Timestamp timestamp = Timestamp.valueOf(start);
+            String query = ("insert into u_have_b(u_id,b_id,start_date) values (?,?,?)");
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
             ps.setInt(1,u_id);
             ps.setInt(2,b_id);
+            ps.setTimestamp(3,timestamp);
+
             ps.executeUpdate();
-            System.out.println("Book added to My Books");
+            System.out.println("Book bought");
         }catch (SQLException | NullPointerException e) {
-            System.out.println("An error occurred while LinkUB.");
+            System.out.println("An error occurred while buying Book.");
+            System.out.println(e.getMessage());
+        }
+    }
+    public static void borrowBook(int u_id, int b_id){
+        Scanner sc = new Scanner(System.in);
+        int addDays;
+        String input;
+
+        while(true){
+            PrintMessage.showBorrowMessage();
+            input = sc.nextLine();
+            if(input.equals("1")){
+                addDays = 3;
+                break;
+            }
+            else if(input.equals("2")){
+                addDays = 7;
+                break;
+            }
+            else if(input.equals("3")){
+                addDays = 14;
+                break;
+            }
+            else if(input.equals("4")){
+                addDays = 21;
+                break;
+            }
+            else{
+                System.out.println("Invalid input");
+            }
+        }
+        LocalDateTime start = LocalDateTime.now();
+        LocalDate end = LocalDate.now().plusDays(addDays);
+
+        Timestamp timestampStart = Timestamp.valueOf(start);
+        java.sql.Date dateEnd = java.sql.Date.valueOf(end);
+
+        try{
+            String query = ("insert into u_have_b(u_id,b_id,start_date,end_date) values (?,?,?,?)");
+            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            ps.setInt(1,u_id);
+            ps.setInt(2,b_id);
+            ps.setTimestamp(3,timestampStart);
+            ps.setDate(4,dateEnd);
+
+            ps.executeUpdate();
+            System.out.println("Book borrowed until " + end);
+        } catch (SQLException | NullPointerException e) {
+            System.out.println("An error occurred while borrowing Book.");
             System.out.println(e.getMessage());
         }
     }
@@ -222,10 +337,14 @@ public class Main {
         if (book == null) {
             System.out.println("Book not found");
         } else {
-            unLinkUB(u_id, b_id);
+            unLinkUB(u_id, b_id,"");
         }
     }
-    public static void unLinkUB(int u_id, int b_id) {
+    public void deleteFromMyBooks(int u_id, int b_id) {
+        Book book = Searching.searchById(u_id, b_id);
+        if (book != null)unLinkUB(u_id, b_id,"update");
+    }
+    public static void unLinkUB(int u_id, int b_id,String op) {
         try{
             String query = (u_id == MANAGER_ID) ? "delete from u_have_b where b_id = ? "
                     : "delete from u_have_b where u_id = ? and b_id = ?";
@@ -239,7 +358,12 @@ public class Main {
             }
 
             ps.executeUpdate();
-            System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
+            if(op.equals("update")){
+                System.out.println("you already have this book but expired");
+            }
+            else{
+                System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
+            }
         }catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while UnLinkUB.");
             System.out.println(e.getMessage());
@@ -258,6 +382,17 @@ public class Main {
     public static void printBook(Book book) {
         System.out.println("ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
                 + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
+    }
+    public static void printBook(Book book,java.sql.Date date) {
+        if(date == null){
+            System.out.println("         [Purchased]         " +"ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
+                    + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
+        }
+        else{
+            System.out.println("[Borrowed until " + date + " ] " + "ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
+                    + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
+        }
+
     }
     public static boolean isNumeric(String str) {
         try {
@@ -299,13 +434,17 @@ public class Main {
                 input = sc.nextLine();
                 if (input.equals("1")) { // show all books
                     main.showBooks(MANAGER_ID);
-                } else if (input.equals("2")) { // search book
+                }
+                else if(input.equals("2")){
+                    main.showUsersRecords();
+                }
+                else if (input.equals("3")) { // search book
                     main.searchBooks(MANAGER_ID);
                 }
-                else if (input.equals("3")) { // add new book
+                else if (input.equals("4")) { // add new book
                     Adding.createBook();
                 }
-                else if (input.equals("4")) { // delete book
+                else if (input.equals("5")) { // delete book
                     Deleting.deleteBook();
                 }
                 else if(input.equals("-1")) { // Exit

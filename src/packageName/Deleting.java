@@ -25,7 +25,7 @@ public class Deleting {
             System.out.println("Book not found");
         }
         else{
-            Main.unLinkUB(u_id,b_id);
+            Main.unLinkUB(u_id,b_id,"");
             try{
                 String query = ("delete from books where b_id = ?");
                 PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
