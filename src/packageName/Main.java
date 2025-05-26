@@ -171,7 +171,7 @@ public class Main {
     public void showAllUsers(){ // just for admin
         boolean ch = false;
         try {
-            String query = ("select u_email from users");
+            String query = ("select u_email from users order by u_id;");
             PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
@@ -318,19 +318,20 @@ public class Main {
             while (true) {
                 PrintMessage.showMainMessageManager(res.email);
                 input = sc.nextLine();
-                if (input.equals("1")) { // show all books
+                if (input.equals("1")) { // show All books
                     main.showBooks(MANAGER_ID);
-                } else if (input.equals("2")) { // search book
+                }
+                else if(input.equals("2")){ // show All users
+                    main.showAllUsers();
+                }
+                else if (input.equals("3")) { // search book
                     main.searchBooks(MANAGER_ID);
                 }
-                else if (input.equals("3")) { // add new book
+                else if (input.equals("4")) { // add new book
                     Adding.createBook();
                 }
-                else if (input.equals("4")) { // delete book
+                else if (input.equals("5")) { // delete book
                     Deleting.deleteBook();
-                }
-                else if(input.equals("5")){ // show all users
-                    main.showAllUsers();
                 }
                 else if(input.equals("-1")) { // Exit
                     break;
