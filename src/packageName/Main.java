@@ -389,7 +389,7 @@ public class Main {
                     + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
         }
         else{
-            System.out.println("[Borrowed until " + date + "] " + "ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
+            System.out.println("[Borrowed until " + date + "]  " + "ID: " + book.getId() + ", " + "Title: " + book.getTitle() + ", "
                     + "Author: " + book.getAuthor() + ", " + "Topic: " + book.getTopic() + ", " + "Year: " + book.getYear());
         }
 
