@@ -215,6 +215,28 @@ public class Main {
             break;
         }
     }
+    public void showAllUsers(){ // just for admin
+        boolean ch = false;
+        try {
+            String query = ("select u_email from users order by u_id;");
+            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ch = true;
+                String email = rs.getString("u_email");
+                System.out.println(email);
+            }
+        }catch(SQLException | NullPointerException e){
+            System.out.println("An error occurred while showing Books.");
+            System.out.println(e.getMessage());
+        }
+        if(!ch){
+            System.out.println("Users Not Found");
+        }
+    }
+
     public void addToMyBooks(int u_id){
         String id;
         while (true) {
@@ -439,12 +461,17 @@ public class Main {
                     main.showUsersRecords();
                 }
                 else if (input.equals("3")) { // search book
+                }
+                else if(input.equals("4")){ // show All users
+                    main.showAllUsers();
+                }
+                else if (input.equals("5")) { // search book
                     main.searchBooks(MANAGER_ID);
                 }
-                else if (input.equals("4")) { // add new book
+                else if (input.equals("6")) { // add new book
                     Adding.createBook();
                 }
-                else if (input.equals("5")) { // delete book
+                else if (input.equals("7")) { // delete book
                     Deleting.deleteBook();
                 }
                 else if(input.equals("-1")) { // Exit
