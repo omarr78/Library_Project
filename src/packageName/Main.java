@@ -90,12 +90,17 @@ public class Main {
                         int id = rs.getInt("u_id");
                         String db_email = rs.getString("u_email");
                         String db_password = rs.getString("u_password");
-                        if(db_email.equals(msg[0]) && db_password.equals(msg[1])){
+                        if(db_password.equals(msg[1])){
                             return new Result(id,db_email);
+                        }
+                        else{
+                            System.out.println("incorrect Password");
+                            i++;
+                            if (i == 2) break;
                         }
                     }
                     else{
-                        System.out.println("incorrect Email or Password");
+                        System.out.println("incorrect Email");
                         i++;
                         if (i == 2) break;
                     }
@@ -434,86 +439,74 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         DealingWithDatabase.startConnection();
 
-        Result res;
+        Result res = null;
 
         while (true) {
-            String input = main.start();
-            if (input.equals("1")) {
-                res= main.login();
-            } else if (input.equals("2")) {
-                main.signUp();
-                res = main.login();
-            } else {
-                DealingWithDatabase.closeConnection();
-                return;
-            }
-            if (res != null) break;
-        }
-        if (res.id == MANAGER_ID) { // Manager Account
-            String input;
-            while (true) {
-                PrintMessage.showMainMessageManager(res.email);
-                input = sc.nextLine();
-                if (input.equals("1")) { // show all books
-                    main.showBooks(MANAGER_ID);
-                }
-                else if(input.equals("2")){
-                    main.showUsersRecords();
-                }
-                else if (input.equals("3")) { // search book
-                }
-                else if(input.equals("4")){ // show All users
-                    main.showAllUsers();
-                }
-                else if (input.equals("5")) { // search book
-                    main.searchBooks(MANAGER_ID);
-                }
-                else if (input.equals("6")) { // add new book
-                    Adding.createBook();
-                }
-                else if (input.equals("7")) { // delete book
-                    Deleting.deleteBook();
-                }
-                else if(input.equals("-1")) { // Exit
-                    break;
-                }
-                else {
-                    System.out.println("Invalid input");
+            while (res == null) {
+                String input = main.start();
+                if (input.equals("1")) {
+                    res = main.login();
+                } else if (input.equals("2")) {
+                    main.signUp();
+                    res = main.login();
+                } else {
+                    DealingWithDatabase.closeConnection();
+                    return;
                 }
             }
-        }
-        else{ // user Account
-            String input;
-            while (true) {
-                PrintMessage.showMainMessageUser(res.email);
-                input = sc.nextLine();
-                if (input.equals("1")) { // show manager books(All books)
-                    main.showBooks(MANAGER_ID);
+
+            if (res.id == MANAGER_ID) { // Manager Account
+                String input;
+                while (true) {
+                    PrintMessage.showMainMessageManager(res.email);
+                    input = sc.nextLine();
+                    if (input.equals("1")) { // Show All Books
+                        main.showBooks(MANAGER_ID);
+                    } else if (input.equals("2")) { // Show Users Borrowing and Purchase Records
+                        main.showUsersRecords();
+                    } else if (input.equals("3")) { // Show All users
+                        main.showAllUsers();
+                    } else if (input.equals("4")) { // Search Book
+                        main.searchBooks(MANAGER_ID);
+                    } else if (input.equals("5")) { // Add New Book
+                        Adding.createBook();
+                    } else if (input.equals("6")) { // Delete Book
+                        Deleting.deleteBook();
+                    } else if (input.equals("-1")) { // Log out
+                        System.out.println("Logging out...");
+                        res = null;
+                        break;
+                    } else {
+                        System.out.println("Invalid input");
+                    }
                 }
-                else if (input.equals("2")) { // show user books
-                    main.showBooks(res.id);
-                }
-                else if (input.equals("3")) { // search manager books(All books)
-                    main.searchBooks(MANAGER_ID);
-                }
-                else if (input.equals("4")) { // search user books
-                    main.searchBooks(res.id);
-                }
-                else if(input.equals("5")) { // Add to my books
-                    main.addToMyBooks(res.id);
-                }
-                else if (input.equals("6")) { // delete from my books
-                    main.deleteFromMyBooks(res.id);
-                }
-                else if(input.equals("-1")) { // Exit
-                    break;
-                }
-                else{
-                    System.out.println("Invalid input");
+            } else { // user Account
+                String input;
+                while (true) {
+                    PrintMessage.showMainMessageUser(res.email);
+                    input = sc.nextLine();
+                    if (input.equals("1")) { // show manager books(All books)
+                        main.showBooks(MANAGER_ID);
+                    } else if (input.equals("2")) { // show user books
+                        main.showBooks(res.id);
+                    } else if (input.equals("3")) { // search manager books(All books)
+                        main.searchBooks(MANAGER_ID);
+                    } else if (input.equals("4")) { // search user books
+                        main.searchBooks(res.id);
+                    } else if (input.equals("5")) { // Add to my books
+                        main.addToMyBooks(res.id);
+                    } else if (input.equals("6")) { // delete from my books
+                        main.deleteFromMyBooks(res.id);
+                    } else if (input.equals("-1")) { // Log out
+                        System.out.println("Logging out...");
+                        res = null;
+                        break;
+                    } else {
+                        System.out.println("Invalid input");
+                    }
                 }
             }
         }
-        DealingWithDatabase.closeConnection();
     }
 
 }

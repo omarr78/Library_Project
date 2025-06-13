@@ -14,7 +14,7 @@ public class PrintMessage {
         Scanner sc = new Scanner(System.in);
         String [] msg = new String[2];
         System.out.print("Enter your Email _@_.com: ");
-        msg[0] = sc.nextLine();
+        msg[0] = sc.nextLine().trim();
         System.out.print("Enter your Password: ");
         msg[1] = sc.nextLine();
         return msg;
@@ -38,7 +38,7 @@ public class PrintMessage {
         System.out.println("4- Search Book");
         System.out.println("5- Add New Book");
         System.out.println("6- Delete Book");
-        System.out.println("(-1) to Exit");
+        System.out.println("(-1) to Log out");
     }
     static void showMainMessageUser(String email){
         System.out.println("---------------------------------------------------");
@@ -47,9 +47,9 @@ public class PrintMessage {
         System.out.println("2- Show my Books");
         System.out.println("3- Search Book in All Books");
         System.out.println("4- Search Book in my Books");
-        System.out.println("5- Add New Book to my Books (By ID)");
+        System.out.println("5- Borrow / Buy Book (By ID)");
         System.out.println("6- Delete from my Books (By ID)");
-        System.out.println("7- (-1) to Exit");
+        System.out.println("(-1) to Log out");
     }
     static void showSearchMessage(){
         System.out.println("1- Search By ID");
