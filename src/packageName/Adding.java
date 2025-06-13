@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-// Adding for only Manager
+// Adding for only Admin
 public class Adding {
     private static String getTitle(){
         Scanner sc = new Scanner(System.in);
@@ -71,7 +71,7 @@ public class Adding {
         Book book = new Book(-1,getTitle(),getAuthor(),getTopic(),getYear());
         try{
             // first check if book is already exist
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(
                     "SELECT * FROM books WHERE b_title = ?");
             ps.setString(1,book.getTitle());
             ResultSet rs = ps.executeQuery();
@@ -79,9 +79,8 @@ public class Adding {
                 System.out.println("Books already exist");
             }
             else{
-                PreparedStatement prs = DealingWithDatabase.getConnection().prepareStatement(
-                        "insert into books(b_title,b_author,b_topic,b_year) values (?,?,?,?)",
-                        Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement prs = Connection_to_db.getConnection().prepareStatement(
+                        "insert into books(b_title,b_author,b_topic,b_year) values (?,?,?,?)");
 
                 prs.setString(1,book.getTitle());
                 prs.setString(2,book.getAuthor());

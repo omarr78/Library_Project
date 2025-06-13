@@ -4,11 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Scanner;
 
-// Deleting for only Manager
+// Deleting for only Admin
 public class Deleting {
 
     public static void deleteBook() {
-        int u_id = Main.MANAGER_ID;
+        int u_id = Main.ADMIN_ID;
         Scanner sc = new Scanner(System.in);
         String ID;
         while (true) {
@@ -27,7 +27,7 @@ public class Deleting {
         else{
             try{
                 String query = ("delete from books where b_id = ?");
-                PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1,b_id);
                 ps.executeUpdate();
                 System.out.println("Book removed from All Books");

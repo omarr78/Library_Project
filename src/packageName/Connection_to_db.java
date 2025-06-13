@@ -1,22 +1,21 @@
 package packageName;
 
-
+import org.postgresql.ds.PGSimpleDataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DealingWithDatabase {
+public class Connection_to_db {
     private static Connection con;
 
     public static void startConnection() {
-        String url = "jdbc:sqlserver://localhost:1433;"
-                + "databaseName=Books;"
-                + "user=sa;"
-                + "password=12345;"
-                + "encrypt=true;"
-                + "trustServerCertificate=true;";
         try{
-            con = DriverManager.getConnection(url);
+            PGSimpleDataSource dataSource = new PGSimpleDataSource();
+            dataSource.setServerNames(new String[] {"localhost"});
+            dataSource.setPortNumbers(new int[] {5432});
+            dataSource.setDatabaseName("books");
+            dataSource.setUser("postgres");
+            dataSource.setPassword("12345");
+            con = dataSource.getConnection();
         }catch(SQLException e) {
             System.out.println("Start Connection failed");
             System.out.println(e.getMessage());

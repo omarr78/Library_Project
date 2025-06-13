@@ -22,7 +22,7 @@ class Result {
 
 
 public class Main {
-    static final int MANAGER_ID = 8;
+    static final int ADMIN_ID= 1;
     Scanner sc = new Scanner(System.in);
 
 
@@ -45,7 +45,7 @@ public class Main {
             msg = PrintMessage.signUp();
             if (validateEmailAndPassword(msg[0], msg[1])) {
                 try{
-                    PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(
+                    PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(
                             "SELECT * FROM users WHERE u_email = ?");
                     ps.setString(1, msg[0]);
                     ResultSet rs = ps.executeQuery();
@@ -55,7 +55,7 @@ public class Main {
                         break;
                     }
                     else{
-                        PreparedStatement prs = DealingWithDatabase.getConnection().prepareStatement(
+                        PreparedStatement prs = Connection_to_db.getConnection().prepareStatement(
                                 "INSERT INTO users(u_email, u_password) VALUES (?, ?)"
                         );
                         prs.setString(1, msg[0]);
@@ -80,7 +80,7 @@ public class Main {
             msg = PrintMessage.login();
             if (validateEmailAndPassword(msg[0], msg[1])) {
                 try{
-                    PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(
+                    PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(
                             "SELECT * FROM users WHERE u_email = ? "
                     );
                     ps.setString(1, msg[0]);
@@ -119,17 +119,17 @@ public class Main {
         boolean ch = false;
         try {
             PreparedStatement ps;
-            if(passedId == MANAGER_ID)
+            if(passedId == ADMIN_ID)
             {
-                 ps = DealingWithDatabase.getConnection().prepareStatement("select * from books");
+                 ps = Connection_to_db.getConnection().prepareStatement("select * from books");
             }
             else{
-                String query = ("select b.b_id,b_title,b_author,b_topic,b_year,end_date " +
-                        "from users as u " +
-                        "join u_have_b h on u.u_id = h.u_id " +
-                        "join books as b on h.b_id = b.b_id " +
-                        "where u.u_id = ? and (end_date is NULL or end_date > getdate())");
-                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                String query = ("SELECT b.b_id,b_title,b_author,b_topic,b_year,end_date " +
+                        "FROM users AS u " +
+                        "JOIN users_books h ON u.u_id = h.u_id " +
+                        "JOIN books AS b ON h.b_id = b.b_id " +
+                        "WHERE u.u_id = ? AND (end_date IS NULL OR end_date > NOW()::DATE)");
+                ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1, passedId);
             }
             ResultSet rs = ps.executeQuery();
@@ -141,7 +141,7 @@ public class Main {
                 String author = rs.getString("b_author");
                 String topic = rs.getString("b_topic");
                 int year = rs.getInt("b_year");
-                if(passedId == MANAGER_ID){
+                if(passedId == ADMIN_ID){
                     printBook(new Book(id,title,author,topic,year));
                 }
                 else{
@@ -154,7 +154,7 @@ public class Main {
                 System.out.println(e.getMessage());
         }
         if(!ch){
-            System.out.println("Books Not Found");
+            System.out.println("No Books Found");
         }
     }
     public void showUsersRecords(){
@@ -162,10 +162,10 @@ public class Main {
         try {
             String query = "select u_email,b_title,start_date,end_date " +
                     "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
+                    "join users_books h on u.u_id = h.u_id " +
                     "join books as b on h.b_id = b.b_id " +
                     "order by start_date";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
 
@@ -223,8 +223,8 @@ public class Main {
     public void showAllUsers(){ // just for admin
         boolean ch = false;
         try {
-            String query = ("select u_email from users order by u_id;");
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            String query = ("SELECT u_email FROM users WHERE u_id != 1 ORDER BY u_id");
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
 
@@ -238,7 +238,7 @@ public class Main {
             System.out.println(e.getMessage());
         }
         if(!ch){
-            System.out.println("Users Not Found");
+            System.out.println("No Users Found");
         }
     }
 
@@ -253,7 +253,7 @@ public class Main {
             }
         }
         int b_id = Integer.parseInt(id);
-        Book book = Searching.searchById(MANAGER_ID, b_id);
+        Book book = Searching.searchById(ADMIN_ID, b_id);
         if (book != null) { // check if the id of book found in all book
             book = Searching.searchById(u_id, b_id);
             if(book == null || Searching.isBookExpired(u_id,b_id)){ // check if book is not exist in myBook
@@ -286,8 +286,8 @@ public class Main {
         try{
             LocalDateTime start = LocalDateTime.now();
             Timestamp timestamp = Timestamp.valueOf(start);
-            String query = ("insert into u_have_b(u_id,b_id,start_date) values (?,?,?)");
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            String query = ("insert into users_books(u_id,b_id,start_date) values (?,?,?)");
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
             ps.setInt(1,u_id);
             ps.setInt(2,b_id);
             ps.setTimestamp(3,timestamp);
@@ -334,8 +334,8 @@ public class Main {
         java.sql.Date dateEnd = java.sql.Date.valueOf(end);
 
         try{
-            String query = ("insert into u_have_b(u_id,b_id,start_date,end_date) values (?,?,?,?)");
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            String query = ("insert into users_books(u_id,b_id,start_date,end_date) values (?,?,?,?)");
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
             ps.setInt(1,u_id);
             ps.setInt(2,b_id);
             ps.setTimestamp(3,timestampStart);
@@ -373,10 +373,10 @@ public class Main {
     }
     public static void unLinkUB(int u_id, int b_id,String op) {
         try{
-            String query = (u_id == MANAGER_ID) ? "delete from u_have_b where b_id = ? "
-                    : "delete from u_have_b where u_id = ? and b_id = ?";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
-            if(u_id == MANAGER_ID){
+            String query = (u_id == ADMIN_ID) ? "delete from users_books where b_id = ? "
+                    : "delete from users_books where u_id = ? and b_id = ?";
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
+            if(u_id == ADMIN_ID){
                 ps.setInt(1,b_id);
             }
             else{
@@ -389,7 +389,7 @@ public class Main {
                 System.out.println("You previously borrowed this book, but the borrowing period has expired.");
             }
             else{
-                System.out.println(u_id == MANAGER_ID ? "The Book is UnLinked From All Users" : "Book removed from My Books");
+                System.out.println(u_id == ADMIN_ID? "The Book is UnLinked From All Users" : "Book removed from My Books");
             }
         }catch (SQLException | NullPointerException e) {
             System.out.println("An error occurred while UnLinkUB.");
@@ -437,7 +437,7 @@ public class Main {
 
         Main main = new Main();
         Scanner sc = new Scanner(System.in);
-        DealingWithDatabase.startConnection();
+        Connection_to_db.startConnection();
 
         Result res = null;
 
@@ -450,24 +450,24 @@ public class Main {
                     main.signUp();
                     res = main.login();
                 } else {
-                    DealingWithDatabase.closeConnection();
+                    Connection_to_db.closeConnection();
                     return;
                 }
             }
 
-            if (res.id == MANAGER_ID) { // Manager Account
+            if (res.id == ADMIN_ID) { // Admin Account
                 String input;
                 while (true) {
-                    PrintMessage.showMainMessageManager(res.email);
+                    PrintMessage.showMainMessageAdmin(res.email);
                     input = sc.nextLine();
                     if (input.equals("1")) { // Show All Books
-                        main.showBooks(MANAGER_ID);
+                        main.showBooks(ADMIN_ID);
                     } else if (input.equals("2")) { // Show Users Borrowing and Purchase Records
                         main.showUsersRecords();
                     } else if (input.equals("3")) { // Show All users
                         main.showAllUsers();
                     } else if (input.equals("4")) { // Search Book
-                        main.searchBooks(MANAGER_ID);
+                        main.searchBooks(ADMIN_ID);
                     } else if (input.equals("5")) { // Add New Book
                         Adding.createBook();
                     } else if (input.equals("6")) { // Delete Book
@@ -485,12 +485,12 @@ public class Main {
                 while (true) {
                     PrintMessage.showMainMessageUser(res.email);
                     input = sc.nextLine();
-                    if (input.equals("1")) { // show manager books(All books)
-                        main.showBooks(MANAGER_ID);
+                    if (input.equals("1")) { // show Admin books(All books)
+                        main.showBooks(ADMIN_ID);
                     } else if (input.equals("2")) { // show user books
                         main.showBooks(res.id);
-                    } else if (input.equals("3")) { // search manager books(All books)
-                        main.searchBooks(MANAGER_ID);
+                    } else if (input.equals("3")) { // search Admin books(All books)
+                        main.searchBooks(ADMIN_ID);
                     } else if (input.equals("4")) { // search user books
                         main.searchBooks(res.id);
                     } else if (input.equals("5")) { // Add to my books

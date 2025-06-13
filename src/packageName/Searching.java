@@ -11,7 +11,7 @@ public class Searching {
     private static final String SUBQUERY =
             "select b.b_id,b_title,b_author,b_topic,b_year " +
                     "from users as u " +
-                    "join u_have_b h on u.u_id = h.u_id " +
+                    "join users_books h on u.u_id = h.u_id " +
                     "join books as b on h.b_id = b.b_id ";
     private static ArrayList<Book> resultHandling(ResultSet rs) throws SQLException {
         ArrayList<Book> books = new ArrayList<>();
@@ -28,8 +28,8 @@ public class Searching {
     }
     public static boolean isBookExpired(int u_id,int b_id) {
         try {
-            String query = "select * from u_have_b where (u_id = ? and b_id = ?) and (end_date is not NULL) and (end_date < getdate())";
-            PreparedStatement ps = DealingWithDatabase.getConnection().prepareStatement(query);
+            String query = "select * from users_books where (u_id = ? and b_id = ?) and (end_date is not NULL) and (end_date < NOW()::DATE)";
+            PreparedStatement ps = Connection_to_db.getConnection().prepareStatement(query);
             ps.setInt(1, u_id);
             ps.setInt(2, b_id);
             ResultSet rs = ps.executeQuery();
@@ -44,13 +44,13 @@ public class Searching {
     public static Book searchById(int u_id,int b_id) {
         try{
             PreparedStatement ps;
-            if(u_id == Main.MANAGER_ID){
-                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where b_id = ?");
+            if(u_id == Main.ADMIN_ID){
+                ps = Connection_to_db.getConnection().prepareStatement("select * from books where b_id = ?");
                 ps.setInt(1, b_id);
             }
             else{
                 String query = SUBQUERY + "where u.u_id = ? and b.b_id = ?";
-                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1, u_id);
                 ps.setInt(2, b_id);
             }
@@ -93,15 +93,15 @@ public class Searching {
     public static ArrayList<Book> searchByTitle(int u_id,String title) {
         try{
             PreparedStatement ps;
-            if(u_id == Main.MANAGER_ID){
-                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where lower(b_title) LIKE ?");
-                ps.setString(1, "%" + title.toLowerCase() + "%");
+            if(u_id == Main.ADMIN_ID){
+                ps = Connection_to_db.getConnection().prepareStatement("select * from books where b_title ILIKE ?");
+                ps.setString(1, "%" + title + "%");
             }
             else{
-                String query = SUBQUERY + "where u.u_id = ? and lower(b.b_title) LIKE ?";
-                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                String query = SUBQUERY + "where u.u_id = ? and b.b_title ILIKE ?";
+                ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1, u_id);
-                ps.setString(2, "%" + title.toLowerCase() + "%");
+                ps.setString(2, "%" + title + "%");
             }
 
             ResultSet rs = ps.executeQuery();
@@ -129,16 +129,16 @@ public class Searching {
     public static ArrayList<Book> searchByAuthor(int u_id,String author) {
         try{
             PreparedStatement ps;
-            if(u_id == Main.MANAGER_ID){
-                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where lower(b_author) LIKE ?");
-                ps.setString(1, "%" + author.toLowerCase() + "%");
+            if(u_id == Main.ADMIN_ID){
+                ps = Connection_to_db.getConnection().prepareStatement("select * from books where b_author ILIKE ?");
+                ps.setString(1, "%" + author + "%");
 
             }
             else{
-                String query = SUBQUERY + "where u.u_id = ? and lower(b.b_author) LIKE ?";
-                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                String query = SUBQUERY + "where u.u_id = ? and b.b_author ILIKE ?";
+                ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1, u_id);
-                ps.setString(2, "%" + author.toLowerCase() + "%");
+                ps.setString(2, "%" + author + "%");
             }
 
             ResultSet rs = ps.executeQuery();
@@ -165,15 +165,15 @@ public class Searching {
     public static ArrayList<Book> searchByTopic(int u_id,String topic) {
         try{
             PreparedStatement ps;
-            if(u_id == Main.MANAGER_ID){
-                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where lower(b_topic) LIKE ?");
-                ps.setString(1, "%" + topic.toLowerCase() + "%");
+            if(u_id == Main.ADMIN_ID){
+                ps = Connection_to_db.getConnection().prepareStatement("select * from books where b_topic ILIKE ?");
+                ps.setString(1, "%" + topic + "%");
             }
             else{
-                String query = SUBQUERY + "where u.u_id = ? and lower(b.b_topic) LIKE ?";
-                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                String query = SUBQUERY + "where u.u_id = ? and b.b_topic ILIKE ?";
+                ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1, u_id);
-                ps.setString(2, "%" + topic.toLowerCase() + "%");
+                ps.setString(2, "%" + topic + "%");
             }
 
             ResultSet rs = ps.executeQuery();
@@ -200,13 +200,13 @@ public class Searching {
     public static ArrayList<Book> searchByYear(int u_id,int year) {
         try{
             PreparedStatement ps;
-            if(u_id == Main.MANAGER_ID){
-                ps = DealingWithDatabase.getConnection().prepareStatement("select * from books where b_year = ?");
+            if(u_id == Main.ADMIN_ID){
+                ps = Connection_to_db.getConnection().prepareStatement("select * from books where b_year = ?");
                 ps.setInt(1, year);
             }
             else{
                 String query = SUBQUERY + "where u.u_id = ? and b.b_year = ?";
-                ps = DealingWithDatabase.getConnection().prepareStatement(query);
+                ps = Connection_to_db.getConnection().prepareStatement(query);
                 ps.setInt(1, u_id);
                 ps.setInt(2, year);
             }

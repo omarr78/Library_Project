@@ -29,7 +29,7 @@ public class PrintMessage {
         msg[1] = sc.nextLine();
         return msg;
     }
-    static void showMainMessageManager(String email){
+    static void showMainMessageAdmin(String email){
         System.out.println("---------------------------------------------------");
         System.out.println("-- "+ email +" --");
         System.out.println("1- Show All Books");
